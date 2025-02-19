@@ -85,6 +85,6 @@ function convertToXML(obj, statusCode) {
 }
 
 
-app.listen(port, '127.0.0.1', () => {
+app.listen(port, () => {
   console.log(`Server running at ${port}`);
 });
