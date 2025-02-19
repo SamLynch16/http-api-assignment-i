@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Simple HTTP Server</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  
+  <script>
+window.addEventListener('DOMContentLoaded', () => {
+  const sendButton = document.getElementById('send');
+  const pageSelect = document.getElementById('page');
+  const typeSelect = document.getElementById('type');
+  const contentSection = document.getElementById('content');
+
+  sendButton.addEventListener('click', () => {
+    const page = pageSelect.value;
+    const type = typeSelect.value;
+    let queryParam = '';
+    
+    if (page === '/unauthorized') {
+      queryParam = '?loggedIn=no'; 
+    }
+
+    console.log(`Fetching: ${page + queryParam} with Accept header: ${type}`);
+
+   
+    fetch(page + queryParam, {
+      method: 'GET',
+      headers: {
+        'Accept': type
+      }
+    })
+    .then(response => {
+      console.log(`Received response with status: ${response.status}`);
+
+   
+      if (!response.ok) {
+        return response.text().then(data => {
+          
+          const errorMessage = data.replace(/\d{3}.*$/, '').trim(); 
+          const formattedErrorMessage = `Error ${response.status}: ${errorMessage || 'No message'}`;
+          throw new Error(formattedErrorMessage);
+        });
+      }
+
+      
+      if (type === 'application/json') {
+        return response.json();
+      } else if (type === 'text/xml') {
+        return response.text();
+      }
+    })
+    .then(data => {
+      console.log('Response data:', data); 
+      contentSection.innerHTML = ''; 
+
+      // Display status message in bold
+      const statusMessage = document.createElement('p');
+      statusMessage.style.fontWeight = 'bold';
+      statusMessage.textContent = pageSelect.options[pageSelect.selectedIndex].text;
+      contentSection.appendChild(statusMessage);
+
+      // Handle JSON response
+      if (type === 'application/json') {
+        const jsonMessage = document.createElement('p');
+        jsonMessage.textContent = `Message: ${data.message || 'No message'}`;
+        contentSection.appendChild(jsonMessage);
+        const jsonId = document.createElement('p');
+        jsonId.textContent = `ID: ${data.id || 'No ID found'}`; 
+        contentSection.appendChild(jsonId);
+      }
+
+    
+      if (type === 'text/xml') {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data, 'text/xml');
+        const message = xmlDoc.getElementsByTagName('message')[0]?.textContent || 'No message found';
+        const id = xmlDoc.getElementsByTagName('id')[0]?.textContent;
+
+       
+        const xmlMessage = document.createElement('p');
+        xmlMessage.textContent = `Message: ${message}`;
+        const xmlId = document.createElement('p');
+        xmlId.textContent = `ID: ${id}`;
+        contentSection.appendChild(xmlMessage);
+        contentSection.appendChild(xmlId);
+      }
+    })
+    .catch(error => {
+      console.log('Error:', error);
+      contentSection.innerHTML = `<p><strong>${pageSelect.options[pageSelect.selectedIndex].text}</strong></p><p>${error.message}</p>`;
+    });
+  });
+});
+</script>
+</head>
+<body>
+  <section id="top">
+    <h3>Status Code Tests</h3>
+    <select id="page">
+      <option value="/success">Success</option>
+      <option value="/badRequest">Bad Request</option>
+      <option value="/unauthorized">Unauthorized</option>
+      <option value="/forbidden">Forbidden</option>
+      <option value="/internal">Internal</option>
+      <option value="/notImplemented">Not Implemented</option>
+      <option value="/notFound">Not Found</option>
+    </select>
+    <select id="type">
+      <option value="application/json">JSON</option>
+      <option value="text/xml">XML</option>
+    </select>
+    <button id="send">Send</button>
+  </section>
+  <section id="content"></section>
+</body>
+</html>

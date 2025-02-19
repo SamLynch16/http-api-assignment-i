@@ -1,0 +1,21 @@
+{
+    "name": "http-api-assignment",
+    "version": "1.0.0",
+    "description": "HTTP API Assignment using Node.js",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.21.2",
+        "http-api-assignment": "file:",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.20.0",
+        "eslint": "^9.20.0",
+        "eslint-plugin-react": "^7.37.4",
+        "globals": "^15.14.0"
+    }
+}
