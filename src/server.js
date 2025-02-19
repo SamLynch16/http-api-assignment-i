@@ -40,6 +40,7 @@ app.get('/internal', (req, res) => {
   handleResponse(req, res, 500, { message: 'Message: Internal Server Error' });
 });
 
+// Not implemented route
 app.get('/notImplemented', (req, res) => {
   handleResponse(req, res, 501, { message: 'Message: Not Implemented' });
 });
@@ -52,11 +53,9 @@ app.get('*', (req, res) => {
   handleResponse(req, res, 404, { message: 'Message: Page Not Found' });
 });
 
-
 function handleResponse(req, res, statusCode, responseContent) {
     const acceptHeader = req.get('Accept') || 'application/json'; 
-  
-   
+    
     if (acceptHeader.includes('application/json')) {
       res.status(statusCode).json(responseContent); 
     } else if (acceptHeader.includes('text/xml')) {
@@ -65,7 +64,6 @@ function handleResponse(req, res, statusCode, responseContent) {
       res.status(406).send('Not Acceptable'); 
     }
 }
-
 
 function convertToXML(obj, statusCode) {
   const escapeXML = (str) => str.replace(/[&<>"']/g, (char) => ({
@@ -84,7 +82,6 @@ function convertToXML(obj, statusCode) {
   return xml;
 }
 
-
 app.listen(port, () => {
-  console.log(`Server running at ${port}`);
+  console.log(`Server running on port ${port}`);
 });
