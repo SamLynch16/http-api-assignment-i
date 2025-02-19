@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, 'client')));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'client.html')); 
+  res.sendFile(path.join(__dirname, '../client', 'client.html')); 
 });
 
 app.get('/success', (req, res) => {
